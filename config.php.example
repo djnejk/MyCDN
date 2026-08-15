@@ -1,0 +1,83 @@
+<?php
+
+return [
+    'app' => [
+        'name' => 'MyCDN',
+        'base_url' => 'https://cdn.example.com',
+        'timezone' => 'Europe/Prague',
+        'auto_migrate' => true,
+    ],
+
+    'database' => [
+        'host' => '127.0.0.1',
+        'port' => 3306,
+        'name' => 'mycdn',
+        'user' => 'mycdn_user',
+        'password' => 'change-me',
+        'charset' => 'utf8mb4',
+        'table_prefix' => 'CDN_',
+    ],
+
+    'admin' => [
+        'username' => 'admin',
+        // Generate with: php -r "echo password_hash('your-password', PASSWORD_DEFAULT), PHP_EOL;"
+        'password_hash' => 'replace-with-password-hash',
+    ],
+
+    'storage' => [
+        'upload_dir' => __DIR__ . '/uploads',
+        'public_path' => '/uploads',
+        'cache_dir' => __DIR__ . '/uploads/cache',
+        'max_file_size' => 50 * 1024 * 1024,
+        'max_files_per_upload' => 20,
+        'allowed_extensions' => [
+            'jpg', 'jpeg', 'png', 'gif', 'webp',
+            'pdf', 'txt', 'csv', 'json',
+            'zip', 'rar', '7z',
+            'mp4', 'webm', 'mp3', 'wav'
+        ],
+        'allowed_mime_types' => [
+            'jpg' => ['image/jpeg'],
+            'jpeg' => ['image/jpeg'],
+            'png' => ['image/png'],
+            'gif' => ['image/gif'],
+            'webp' => ['image/webp'],
+            'pdf' => ['application/pdf'],
+            'txt' => ['text/plain'],
+            'csv' => ['text/plain', 'text/csv', 'application/csv'],
+            'json' => ['application/json', 'text/plain'],
+            'zip' => ['application/zip', 'application/x-zip-compressed'],
+            'rar' => ['application/vnd.rar', 'application/x-rar', 'application/x-rar-compressed'],
+            '7z' => ['application/x-7z-compressed'],
+            'mp4' => ['video/mp4'],
+            'webm' => ['video/webm'],
+            'mp3' => ['audio/mpeg'],
+            'wav' => ['audio/wav', 'audio/x-wav'],
+        ],
+    ],
+
+    'images' => [
+        'max_resize_width' => 3840,
+        'max_resize_height' => 3840,
+        'max_source_pixels' => 40000000,
+        'max_resize_pixels' => 12000000,
+        'jpeg_quality' => 86,
+        'webp_quality' => 82,
+        // fit = keep aspect ratio inside the requested box, crop = center-crop to exact dimensions
+        'default_mode' => 'fit',
+    ],
+
+    'api_tokens' => [
+        // Use a long random token, for example: bin2hex(random_bytes(32))
+        'replace-this-token-with-a-long-random-secret',
+    ],
+
+    'rate_limit' => [
+        'enabled' => true,
+        'dir' => __DIR__ . '/uploads/.rate-limit',
+        'api_requests' => 120,
+        'api_window_seconds' => 60,
+        'image_requests' => 600,
+        'image_window_seconds' => 60,
+    ],
+];

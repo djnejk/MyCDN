@@ -1,0 +1,26 @@
+Options -Indexes
+RewriteEngine On
+
+RewriteRule ^i/([A-Fa-f0-9]{32})\.([A-Za-z0-9]+)$ image.php?uid=$1 [L,QSA]
+RewriteRule ^f/([A-Fa-f0-9]{32})\.([A-Za-z0-9]+)$ file.php?uid=$1 [L,QSA]
+RewriteRule ^uploads/ - [F,L]
+RewriteRule ^src/ - [F,L]
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "no-referrer"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+<Files "config.php">
+    Require all denied
+</Files>
+
+<FilesMatch "^(config\.php\.example|README\.md|schema\.sql|router\.php)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
