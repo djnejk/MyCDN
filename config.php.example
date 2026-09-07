@@ -8,6 +8,14 @@ return [
         'auto_migrate' => true,
     ],
 
+    'cors' => [
+        // Use ['*'] to allow every website, or list exact origins (without a trailing slash).
+        'allowed_origins' => [
+            'https://www.example.com',
+            'https://admin.example.com',
+        ],
+    ],
+
     'database' => [
         'host' => '127.0.0.1',
         'port' => 3306,

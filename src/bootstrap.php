@@ -88,6 +88,41 @@ function security_headers(bool $allowInline = false): void
     }
 }
 
+function cors_headers(array $allowedMethods = ['GET', 'HEAD', 'OPTIONS']): void
+{
+    $allowedOrigins = config_value('cors.allowed_origins', []);
+    if (!is_array($allowedOrigins) || $allowedOrigins === []) {
+        return;
+    }
+
+    $origin = trim((string) ($_SERVER['HTTP_ORIGIN'] ?? ''));
+    $allowAll = in_array('*', $allowedOrigins, true);
+
+    if ($allowAll) {
+        header('Access-Control-Allow-Origin: *');
+    } elseif ($origin !== '' && in_array($origin, $allowedOrigins, true)) {
+        header('Access-Control-Allow-Origin: ' . $origin);
+        header('Vary: Origin', false);
+    } else {
+        return;
+    }
+
+    header('Access-Control-Allow-Methods: ' . implode(', ', $allowedMethods));
+    header('Access-Control-Allow-Headers: Authorization, Content-Type, X-Api-Token');
+    header('Access-Control-Max-Age: 86400');
+}
+
+function handle_cors_preflight(): void
+{
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'OPTIONS') {
+        return;
+    }
+
+    http_response_code(204);
+    header('Content-Length: 0');
+    exit;
+}
+
 function rate_limit(string $bucket, int $maxRequests, int $windowSeconds): void
 {
     if (config_value('rate_limit.enabled', true) !== true) {

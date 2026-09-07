@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 require __DIR__ . '/src/bootstrap.php';
 
+cors_headers();
+handle_cors_preflight();
+
 use MyCDN\Database;
 use MyCDN\FileRepository;
 

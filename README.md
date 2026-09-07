@@ -62,6 +62,29 @@ The real config file must be named:
 config.php
 ```
 
+### CORS
+
+Cross-origin access to the API, images, and downloads is controlled in `config.php`:
+
+```php
+'cors' => [
+    'allowed_origins' => [
+        'https://www.example.com',
+        'https://admin.example.com',
+    ],
+],
+```
+
+Origins must be exact and must not contain a trailing slash. To allow requests from every website, use:
+
+```php
+'cors' => [
+    'allowed_origins' => ['*'],
+],
+```
+
+Use an empty array (`[]`) to disable cross-origin access. The wildcard mode does not enable credentialed browser requests (cookies); API tokens should be sent in the `Authorization` or `X-Api-Token` header.
+
 Keep it out of Git. This repository includes:
 
 ```text
