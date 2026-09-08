@@ -135,11 +135,17 @@ final class UploadManager
 
     private function sanitizeFileName(string $name): string
     {
-        $name = basename($name);
-        $name = preg_replace('/[^A-Za-z0-9._-]+/', '-', $name) ?: 'file';
-        $name = trim($name, '.-');
+        // Browsers normally send only the file name, but strip both Unix and
+        // Windows paths defensively while preserving Unicode and spaces.
+        $name = basename(str_replace('\\', '/', $name));
+        $name = preg_replace('/[\x00-\x1F\x7F]+/u', '', $name) ?? '';
+        $name = trim($name);
 
-        return $name !== '' ? substr($name, 0, 255) : 'file';
+        // The database column is VARCHAR(255); truncate by Unicode characters,
+        // not bytes, so a multibyte character is never cut in half.
+        $name = preg_replace('/\A(.{0,255}).*\z/us', '$1', $name) ?? '';
+
+        return $name !== '' && $name !== '.' && $name !== '..' ? $name : 'file';
     }
 
     public function sanitizeCategory(?string $category): string
