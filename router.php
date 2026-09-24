@@ -8,7 +8,7 @@ $file = __DIR__ . $path;
 if (
     str_starts_with($path, '/uploads/')
     || str_starts_with($path, '/src/')
-    || preg_match('#/(?:\.|config\.php$|config\.php\.example$|README\.md$|schema\.sql$|router\.php$)#', $path)
+    || preg_match('#/(?:\.|config\.php$|config\.php\.example$|README\.md$|nginx\.md$|schema\.sql$|router\.php$)#', $path)
 ) {
     http_response_code(403);
     echo 'Forbidden.';

@@ -17,7 +17,7 @@ RewriteRule ^src/ - [F,L]
     Require all denied
 </Files>
 
-<FilesMatch "^(config\.php\.example|README\.md|schema\.sql|router\.php)$">
+<FilesMatch "^(config\.php\.example|README\.md|nginx\.md|schema\.sql|router\.php)$">
     Require all denied
 </FilesMatch>
 

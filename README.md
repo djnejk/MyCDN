@@ -26,7 +26,7 @@ MyCDN is a small self-hosted PHP file CDN/storage app with an admin panel, MySQL
 - PDO MySQL extension
 - Fileinfo extension
 - GD extension for dynamic image resizing
-- Apache with `mod_rewrite` for clean image URLs in production
+- Apache with `mod_rewrite`, or Nginx with PHP-FPM, for clean image URLs in production
 
 ## Installation
 
@@ -40,6 +40,8 @@ MyCDN is a small self-hosted PHP file CDN/storage app with an admin panel, MySQL
 3. Import `schema.sql`, or keep `app.auto_migrate` enabled.
 4. Make sure PHP can write to `uploads/`.
 5. Point your web server document root to this project.
+
+Apache uses the included `.htaccess`. For Nginx, which does not read `.htaccess`, follow the [Nginx configuration guide](nginx.md).
 
 In production, direct access to `uploads/` should remain blocked. Public file access should go through:
 
