@@ -50,6 +50,11 @@ In production, direct access to `uploads/` should remain blocked. Public file ac
 /f/{uid}.{ext}
 ```
 
+Configure PHP-FPM with `display_errors = Off`, `display_startup_errors = Off`,
+and `log_errors = On` in production. The API also disables error display before
+bootstrap so warnings cannot corrupt its JSON responses; diagnostics remain in
+the PHP error log. Reload PHP-FPM after changing its configuration.
+
 For the PHP built-in development server, use `router.php` because `php -S` does not read `.htaccess`:
 
 ```bash

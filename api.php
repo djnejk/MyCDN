@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+// Keep PHP diagnostics out of JSON responses, including during bootstrap.
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
 require __DIR__ . '/src/bootstrap.php';
 
 cors_headers(['GET', 'POST', 'DELETE', 'OPTIONS']);

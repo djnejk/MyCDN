@@ -169,7 +169,6 @@ final class UploadManager
         }
 
         $mimeType = finfo_file($finfo, $path) ?: 'application/octet-stream';
-        finfo_close($finfo);
 
         return $mimeType;
     }
