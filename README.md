@@ -425,11 +425,19 @@ Resize and center-crop to exact dimensions:
 https://cdn.example.com/i/UID.jpg?s=800x600&m=crop
 ```
 
+Resize proportionally to a percentage of the original dimensions (values above 100 enlarge the image):
+
+```text
+https://cdn.example.com/i/UID.jpg?r=50
+https://cdn.example.com/i/UID.jpg?r=200
+```
+
 ### Image Parameters
 
 | Parameter | Values | Description |
 |---|---|---|
 | `s` | `WIDTHxHEIGHT` | Requested image size. |
+| `r` | Percentage, for example `50`, `120`, `200` | Proportional size relative to the original. Empty, `0`, or `100` serves the original. When present, `r` takes precedence over `s` and `m`. |
 | `m` | `fit`, `crop` | `fit` keeps aspect ratio. `crop` creates exact dimensions with center crop. |
 
 The default mode is `fit`. In `fit` mode, smaller images are not upscaled. Generated variants are cached here:
@@ -437,6 +445,8 @@ The default mode is `fit`. In `fit` mode, smaller images are not upscaled. Gener
 ```text
 uploads/cache/{uid}/{WIDTH}x{HEIGHT}_{mode}.{ext}
 ```
+
+Percentage variants use the `scale` mode in the cache filename, so enlarged variants cannot collide with the non-upscaling `fit` mode.
 
 ## Error Responses
 

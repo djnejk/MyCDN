@@ -51,8 +51,54 @@ function image_send_file(string $path, string $mimeType): never
     exit;
 }
 
-function image_size_from_query(): ?array
+function image_validate_target_size(int $width, int $height): void
 {
+    $maxWidth = (int) config_value('images.max_resize_width', 7680);
+    $maxHeight = (int) config_value('images.max_resize_height', 7680);
+
+    if ($width < 1 || $height < 1 || $width > $maxWidth || $height > $maxHeight) {
+        image_bad_request('Requested image size is outside allowed limits.');
+    }
+
+    $maxPixels = (int) config_value('images.max_resize_pixels', 12000000);
+    if (($width * $height) > $maxPixels) {
+        image_bad_request('Requested image size is too large.');
+    }
+}
+
+function image_size_from_query(string $sourcePath): ?array
+{
+    if (array_key_exists('r', $_GET)) {
+        $ratio = trim((string) $_GET['r']);
+        if ($ratio === '' || $ratio === '0') {
+            return null;
+        }
+
+        if (!preg_match('/^\d{1,6}(?:\.\d{1,2})?$/', $ratio)) {
+            image_bad_request('Invalid ratio. Use r=PERCENT, for example r=50 or r=200.');
+        }
+
+        $percent = (float) $ratio;
+        if ($percent <= 0) {
+            return null;
+        }
+
+        if ($percent === 100.0) {
+            return null;
+        }
+
+        $sourceSize = @getimagesize($sourcePath);
+        if ($sourceSize === false || !isset($sourceSize[0], $sourceSize[1])) {
+            image_bad_request('Cannot read source image dimensions.');
+        }
+
+        $width = max(1, (int) round((int) $sourceSize[0] * $percent / 100));
+        $height = max(1, (int) round((int) $sourceSize[1] * $percent / 100));
+        image_validate_target_size($width, $height);
+
+        return [$width, $height, 'scale'];
+    }
+
     $size = trim((string) ($_GET['s'] ?? ''));
     if ($size === '') {
         return null;
@@ -64,19 +110,9 @@ function image_size_from_query(): ?array
 
     $width = (int) $matches[1];
     $height = (int) $matches[2];
-    $maxWidth = (int) config_value('images.max_resize_width', 3840);
-    $maxHeight = (int) config_value('images.max_resize_height', 3840);
+    image_validate_target_size($width, $height);
 
-    if ($width < 1 || $height < 1 || $width > $maxWidth || $height > $maxHeight) {
-        image_bad_request('Requested image size is outside allowed limits.');
-    }
-
-    $maxPixels = (int) config_value('images.max_resize_pixels', 12000000);
-    if (($width * $height) > $maxPixels) {
-        image_bad_request('Requested image size is too large.');
-    }
-
-    return [$width, $height];
+    return [$width, $height, image_mode_from_query()];
 }
 
 function image_mode_from_query(): string
@@ -144,7 +180,14 @@ function image_resize(string $sourcePath, string $targetPath, string $extension,
         image_bad_request('Source image is too large to resize.');
     }
 
-    if ($mode === 'crop') {
+    if ($mode === 'scale') {
+        $cropWidth = $sourceWidth;
+        $cropHeight = $sourceHeight;
+        $srcX = 0;
+        $srcY = 0;
+        $destWidth = $targetWidth;
+        $destHeight = $targetHeight;
+    } elseif ($mode === 'crop') {
         $sourceRatio = $sourceWidth / $sourceHeight;
         $targetRatio = $targetWidth / $targetHeight;
         if ($sourceRatio > $targetRatio) {
@@ -204,14 +247,13 @@ try {
         image_bad_request('SVG images are not served inline.');
     }
 
-    $requestedSize = image_size_from_query();
+    $requestedSize = image_size_from_query($sourcePath);
 
     if ($requestedSize === null) {
         image_send_file($sourcePath, $mimeType);
     }
 
-    [$width, $height] = $requestedSize;
-    $mode = image_mode_from_query();
+    [$width, $height, $mode] = $requestedSize;
     $cachePath = image_cache_path($file, $width, $height, $mode);
 
     if (!is_file($cachePath) || filemtime($cachePath) < filemtime($sourcePath)) {

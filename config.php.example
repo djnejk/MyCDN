@@ -65,8 +65,8 @@ return [
     ],
 
     'images' => [
-        'max_resize_width' => 3840,
-        'max_resize_height' => 3840,
+        'max_resize_width' => 7680,
+        'max_resize_height' => 7680,
         'max_source_pixels' => 40000000,
         'max_resize_pixels' => 12000000,
         'jpeg_quality' => 86,
