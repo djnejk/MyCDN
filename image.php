@@ -176,7 +176,6 @@ function image_resize(string $sourcePath, string $targetPath, string $extension,
     $sourceHeight = imagesy($source);
     $maxSourcePixels = (int) config_value('images.max_source_pixels', 40000000);
     if (($sourceWidth * $sourceHeight) > $maxSourcePixels) {
-        imagedestroy($source);
         image_bad_request('Source image is too large to resize.');
     }
 
@@ -221,8 +220,6 @@ function image_resize(string $sourcePath, string $targetPath, string $extension,
 
     imagecopyresampled($resized, $source, 0, 0, $srcX, $srcY, $destWidth, $destHeight, $cropWidth, $cropHeight);
     image_save($resized, $targetPath, $extension, '');
-    imagedestroy($source);
-    imagedestroy($resized);
 }
 
 try {
